@@ -10,9 +10,17 @@ class User
     public $password;
     public $email;
 
-    public function __construct(PDO $db)
+    public function __construct(PDO    $db,
+                                string $firstname = null,
+                                string $lastname = null,
+                                string $password = null,
+                                string $email = null)
     {
         $this->conn = $db;
+        $this->firstname = $firstname;
+        $this->lastname = $lastname;
+        $this->password = $password;
+        $this->email = $email;
     }
 
     public final function isValid(): bool
@@ -22,8 +30,8 @@ class User
 
     final function create(): bool
     {
-        $query = "INSERT INTO user (firstname, lastname, password, email) 
-                    VALUES(:firstname, :lastname, :password, :email)";
+        $query = 'INSERT INTO user (firstname, lastname, password, email) 
+                    VALUES(:firstname, :lastname, :password, :email)';
         $stmt = $this->conn->prepare($query);
 
         $this->firstname = htmlspecialchars(strip_tags($this->firstname));
@@ -45,12 +53,12 @@ class User
         return false;
     }
 
-    final function emailExists(): bool
+    final function loadByEmail(): bool
     {
-        $query = "SELECT id, firstname, lastname, password
+        $query = 'SELECT id, firstname, lastname, password
           	        FROM user 
                     WHERE email = ?
-          	        LIMIT 0,1";
+          	        LIMIT 0,1';
 
         $stmt = $this->conn->prepare($query);
 
